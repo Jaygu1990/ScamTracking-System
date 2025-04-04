@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-top: 20px;
+        }
+
+        h2 {
+            color: #333;
+            padding-left: 20px;
+        }
+
+        form {
+            width: 300px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 6px;
+            display: block;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input:disabled {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .results {
+            margin-top: 40px;
+            padding-left: 20px;
+        }
+
+        .results ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .results li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #45a049;
+        }
+
+        .pagination a[style*="pointer-events: none"] {
+            background-color: #f2f2f2;
+            color: grey;
+            cursor: not-allowed;
+        }
+    </style>
+    <script>
+        // Function to grey out fields based on the condition
+        function toggleFields() {
+            var tiktokUsername = document.getElementById("tiktok_username").value.trim();
+            var address = document.getElementById("address").value.trim();
+
+            if (tiktokUsername) {
+                // Grey out the address field if TikTok username is filled
+                document.getElementById("address").style.backgroundColor = "lightgrey";
+                document.getElementById("address").disabled = true;
+            } else {
+                // Restore the address field if TikTok username is empty
+                document.getElementById("address").style.backgroundColor = "";
+                document.getElementById("address").disabled = false;
+            }
+
+            if (address) {
+                // Grey out the TikTok username field if address is filled
+                document.getElementById("tiktok_username").style.backgroundColor = "lightgrey";
+                document.getElementById("tiktok_username").disabled = true;
+            } else {
+                // Restore the TikTok username field if address is empty
+                document.getElementById("tiktok_username").style.backgroundColor = "";
+                document.getElementById("tiktok_username").disabled = false;
+            }
+        }
+
+        // Attach the function to input fields to monitor changes
+        window.onload = function() {
+            // Check fields on load
+            toggleFields();
+            // Add event listeners to fields to trigger on input
+            document.getElementById("tiktok_username").addEventListener("input", toggleFields);
+            document.getElementById("address").addEventListener("input", toggleFields);
+        };
+    </script>
+</head>
+<body>
+    <h1>All Reported Fraudulent Chargebacks</h1>
+
+    <p><strong>Search Guidelines:</strong> The TikTok Username search performs an exact match, while the Address search allows for a 70% similarity match, excluding city and province/state considerations. Please provide relevant details to find reported chargebacks.</p>
+    <form action="/query" method="post">
+        <label for="tiktok_username">TikTok Username:</label>
+        <input type="text" id="tiktok_username" name="tiktok_username" placeholder="Enter TikTok username"><br>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" placeholder="Enter address"><br>
+
+        <button type="submit">Search</button>
+    </form>
+
+    <div class="results">
+        <h2>Results:</h2>
+        {% if results %}
+            <ul>
+                {% for result in results %}
+                    <li>
+                        <strong>TikTok Username:</strong> {{ result[1] }}<br>
+                        <strong>Address:</strong> {{ result[2] }}<br>
+                        <strong>City:</strong> {{ result[3] }}<br>
+                        <strong>Province/State:</strong> {{ result[4] }}<br>
+                        <strong>Note:</strong> {{ result[5] }}<br>
+                        <strong>Streamer:</strong> {{ result[6] }}<br>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+    </div>
+
+    <div class="pagination">
+        <a href="/query?page={{ page - 1 }}" {% if page == 1 %}style="pointer-events: none; color: grey;"{% endif %}>Previous</a>
+        <a href="/query?page={{ page + 1 }}" {% if not has_next_page %}style="pointer-events: none; color: grey;"{% endif %}>Next</a>
+    </div>
+</body>
+</html>
+
+
