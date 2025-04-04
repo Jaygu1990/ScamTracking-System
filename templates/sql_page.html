@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Query Page</title>
+</head>
+<body>
+    <h1>SQL Query Execution</h1>
+
+    <!-- Display Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li style="color: {% if category == 'success' %}green{% elif category == 'error' %}red{% else %}orange{% endif %};">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <!-- SQL Query Form -->
+    <form action="/sql" method="post">
+        <label for="sql_query">Enter SQL Query:</label><br><br>
+        <textarea id="sql_query" name="sql_query" rows="5" cols="40"></textarea><br><br>
+        <button type="submit">Execute SQL</button>
+    </form>
+</body>
+</html>

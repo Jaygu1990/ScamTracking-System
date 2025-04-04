@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 import sqlite3
 from difflib import SequenceMatcher
 
 app = Flask(__name__)
+app.secret_key = '3744596gwj'  # Required for flashing messages
 
 # Function to connect to the SQLite database
 def get_db_connection():
@@ -82,7 +83,29 @@ def query():
 
     return render_template("query.html", results=results, page=page, has_next_page=has_next_page)
 
+# New route to handle SQL query execution
+@app.route("/sql", methods=["GET", "POST"])
+def sql_page():
+    if request.method == "POST":
+        sql_query = request.form["sql_query"].strip()
+
+        if sql_query:
+            try:
+                conn = get_db_connection()
+                cur = conn.cursor()
+                cur.execute(sql_query)
+                conn.commit()
+                flash("SQL query executed successfully!", "success")
+                conn.close()
+            except sqlite3.Error as e:
+                flash(f"Error executing SQL query: {e}", "error")
+        else:
+            flash("Please enter an SQL query.", "warning")
+
+    return render_template("sql_page.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
