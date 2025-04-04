@@ -150,6 +150,11 @@
             document.getElementById("tiktok_username").addEventListener("input", toggleFields);
             document.getElementById("address").addEventListener("input", toggleFields);
         };
+
+        // Function to refresh the page
+        function refreshPage() {
+            window.location.reload();
+        }
     </script>
 </head>
 <body>
@@ -189,6 +194,11 @@
     <div class="pagination">
         <a href="/query?page={{ page - 1 }}" {% if page == 1 %}style="pointer-events: none; color: grey;"{% endif %}>Previous</a>
         <a href="/query?page={{ page + 1 }}" {% if not has_next_page %}style="pointer-events: none; color: grey;"{% endif %}>Next</a>
+    </div>
+
+    <!-- Refresh Button -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="refreshPage()">Refresh Page</button>
     </div>
 </body>
 </html>
