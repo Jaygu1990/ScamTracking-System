@@ -153,7 +153,12 @@
 
         // Function to refresh the page
         function refreshPage() {
-            window.location.reload();
+            // Clear the form fields
+            document.getElementById("tiktok_username").value = '';
+            document.getElementById("address").value = '';
+
+            // Reload the page to reset the results
+            location.reload();
         }
     </script>
 </head>
